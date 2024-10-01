@@ -7,7 +7,6 @@ const TimesContainer = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 10px;
 `;
 
 const TimesTitle = styled.h2`
@@ -18,12 +17,12 @@ const TimeButton = styled.button`
   background-color: #4caf50;
   color: #fff;
   margin: 5px;
-  padding: 10px;
+  padding: 10px 25px;
   border: none;
   border-radius: 4px;
   cursor: pointer;
   flex: 1;
-
+  outline: ${({ isselected }) => (isselected ? "3px solid #fff" : "0")};
   &:hover {
     background-color: #45a049;
   }
@@ -31,7 +30,12 @@ const TimeButton = styled.button`
 
 const TimeList = styled.ul`
   list-style-type: none;
-  padding: 0;
+  padding: 10px;
+  max-height: 350px;
+  min-width: 400px;
+  background-color: #1a1a1a;
+  border-radius: 8px 0 0 8px;
+  overflow-y: auto;
 `;
 
 const NoTimesMessage = styled.div`
@@ -39,12 +43,12 @@ const NoTimesMessage = styled.div`
   color: #888;
 `;
 
-const AvailableTimes = ({ selectedDate }) => {
+const AvailableTimes = ({ selectedDate, onTimeSelect, selectedTime }) => {
   const [availableTimes, setAvailableTimes] = useState([]);
 
   useEffect(() => {
     const fetchData = async () => {
-      const response = await fetch("http://localhost:3030/time-slots");
+      const response = await fetch("http://localhost:3000/time-slots");
       const data = await response.json();
       const times = data
         .filter((slot) => slot.date === selectedDate)
@@ -73,7 +77,12 @@ const AvailableTimes = ({ selectedDate }) => {
           <TimeList>
             {availableTimes.map((time, index) => (
               <li key={index}>
-                <TimeButton>{time}</TimeButton>
+                <TimeButton
+                  isselected={selectedTime === time}
+                  onClick={() => onTimeSelect(time)}
+                >
+                  {time}
+                </TimeButton>
               </li>
             ))}
           </TimeList>

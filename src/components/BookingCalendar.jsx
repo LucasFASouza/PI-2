@@ -17,6 +17,10 @@ const CalendarContainer = styled.div`
   align-items: center;
 `;
 
+const CalendarTitle = styled.h2`
+  margin: 10px 0;
+`;
+
 const WeekRow = styled.div`
   display: flex;
   justify-content: space-between;
@@ -24,14 +28,14 @@ const WeekRow = styled.div`
 `;
 
 const DayButton = styled.button`
-  background-color: ${(props) => (props.$isHighlighted ? "#4CAF50" : "#ddd")};
-  color: ${(props) => (props.$isHighlighted ? "#fff" : "#888")};
   margin: 5px;
   padding: 10px;
-  border: none;
   border-radius: 4px;
   cursor: pointer;
   flex: 1;
+  &:hover {
+    background-color: #fff;
+  }
 `;
 
 const DayLabel = styled.div`
@@ -47,13 +51,13 @@ const EmptyDay = styled.div`
   padding: 10px;
 `;
 
-const BookingCalendar = ({ onDateSelect }) => {
+const BookingCalendar = ({ onDateSelect, selectedDate }) => {
   const [highlightedDates, setHighlightedDates] = useState([]);
   const [interval, setInterval] = useState({ start: null, end: null });
 
   useEffect(() => {
     const fetchData = async () => {
-      const response = await fetch("http://localhost:3030/time-slots");
+      const response = await fetch("http://localhost:3000/time-slots");
       const data = await response.json();
       const dates = data.map((slot) => parseISO(slot.date));
       setHighlightedDates(dates);
@@ -95,10 +99,20 @@ const BookingCalendar = ({ onDateSelect }) => {
       isSameDay(day, highlightedDate)
     );
 
+    const isSelected = selectedDate && isSameDay(day, parseISO(selectedDate));
+
+    const color = isHighlighted ? "#fff" : "#888";
+    const backgroundColor = isHighlighted ? "#4CAF50" : "#ddd";
+    const outline = isSelected ? "3px solid #ddd" : "none";
+
     daysInWeek.push(
       <DayButton
         key={index}
-        $isHighlighted={isHighlighted}
+        style={{
+          color: color,
+          backgroundColor: backgroundColor,
+          outline: outline,
+        }}
         onClick={() => onDateSelect(format(day, "yyyy-MM-dd"))}
       >
         {format(day, "dd/MM")}
@@ -120,6 +134,7 @@ const BookingCalendar = ({ onDateSelect }) => {
 
   return (
     <CalendarContainer>
+      <CalendarTitle>Datas disponíveis</CalendarTitle>
       <WeekRow>
         {dayLabels.map((label, index) => (
           <DayLabel key={index}>{label}</DayLabel>

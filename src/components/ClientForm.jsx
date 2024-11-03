@@ -1,5 +1,4 @@
-import React from "react";
-import { useState } from "react";
+import React, { useState, useEffect } from "react";
 import MaskedInput from "react-text-mask";
 import styled from "styled-components";
 
@@ -46,12 +45,81 @@ const Input = styled.input`
   box-sizing: border-box;
 `;
 
+const Select = styled.select`
+  width: 100%;
+  padding: 10px;
+  border-radius: 4px;
+  background-color: #1a1a1a;
+  color: #fff;
+  box-sizing: border-box;
+`;
+
 const ClientForm = ({
   clientData,
   setClientData,
   advanceStage,
   RetrieveStage,
 }) => {
+  const [clients, setClients] = useState([]);
+
+  const [pets, setPets] = useState([]);
+  const [selectedPet, setSelectedPet] = useState("New");
+
+  const [clientPets, setClientPets] = useState([]);
+
+  useEffect(() => {
+    fetch("http://localhost:3000/clients")
+      .then((response) => response.json())
+      .then((data) => setClients(data))
+      .catch((error) => console.error("Error fetching clients:", error));
+
+    fetch("http://localhost:3000/pets")
+      .then((response) => response.json())
+      .then((data) => setPets(data))
+      .catch((error) => console.error("Error fetching pets:", error));
+  }, []);
+
+  function searchEmail() {
+    const foundClient = clients.find(
+      (client) => client.email === clientData.clientEmail
+    );
+
+    if (foundClient) {
+      setClientData({
+        ...clientData,
+        clientName: foundClient.name,
+        clientPhone: foundClient.phone,
+      });
+
+      const clientPets = pets.filter((pet) => pet.client_id === foundClient.id);
+      setClientPets(clientPets);
+    }
+  }
+
+  function handlePetChange(event) {
+    const petId = event.target.value;
+
+    if (petId === "New") {
+      setClientData({
+        ...clientData,
+        petName: "",
+        petSpecies: "",
+        petBreed: "",
+        petAge: "",
+      });
+    } else {
+      const chosenPet = pets.find((pet) => pet.id === parseInt(petId));
+
+      setClientData({
+        ...clientData,
+        petName: chosenPet.name,
+        petSpecies: chosenPet.species,
+        petBreed: chosenPet.breed,
+        petAge: chosenPet.age,
+      });
+    }
+  }
+
   function handleChange(event) {
     const { name, value } = event.target;
     setClientData({ ...clientData, [name]: value });
@@ -70,6 +138,19 @@ const ClientForm = ({
         <FormGrid>
           <div>
             <FormField>
+              <Label htmlFor="clientEmail">Email:</Label>
+              <Input
+                type="email"
+                id="clientEmail"
+                name="clientEmail"
+                value={clientData.clientEmail}
+                onChange={handleChange}
+                onBlur={searchEmail}
+                required
+              />
+            </FormField>
+
+            <FormField>
               <Label htmlFor="clientName">Nome do Cliente:</Label>
               <Input
                 type="text"
@@ -80,17 +161,7 @@ const ClientForm = ({
                 required
               />
             </FormField>
-            <FormField>
-              <Label htmlFor="clientEmail">Email:</Label>
-              <Input
-                type="email"
-                id="clientEmail"
-                name="clientEmail"
-                value={clientData.clientEmail}
-                onChange={handleChange}
-                required
-              />
-            </FormField>
+
             <FormField>
               <Label htmlFor="clientPhone">Telefone:</Label>
               <MaskedInput
@@ -127,6 +198,22 @@ const ClientForm = ({
             </FormField>
           </div>
           <div>
+            <FormField>
+              <Label htmlFor="petName">Selecionar Pet:</Label>
+              <Select
+                id="selectPet"
+                value={selectedPet}
+                onChange={handlePetChange}
+              >
+                <option value="New">Novo</option>
+                {clientPets.map((pet) => (
+                  <option key={pet.id} value={pet.id}>
+                    {pet.name}
+                  </option>
+                ))}
+              </Select>
+            </FormField>
+
             <FormField>
               <Label htmlFor="petName">Nome do Pet:</Label>
               <Input

@@ -380,5 +380,53 @@
       "time": "17:00",
       "date": "2024-09-10"
     }
+  ],
+  "clients": [
+    {
+      "id": 1,
+      "name": "Jon Snow",
+      "email": "jon.snow@nightpatrol.wes",
+      "phone": "11 99999-9999"
+    },
+    {
+      "id": 2,
+      "name": "Daenerys Targaryen",
+      "email": "daenerys@targaryen.wes",
+      "phone": "11 99999-9999"
+    }
+  ],
+  "pets": [
+    {
+      "id": 0,
+      "client_id": 1,
+      "name": "Ghost",
+      "species": "Lobo",
+      "breed": "Lobo Gigante",
+      "age": 4
+    },
+    {
+      "id": 1,
+      "client_id": 2,
+      "name": "Drogon",
+      "species": "Dragão",
+      "breed": "Escamas Negras",
+      "age": 3
+    },
+    {
+      "id": 2,
+      "client_id": 2,
+      "name": "Rhaegal",
+      "species": "Dragão",
+      "breed": "Escamas Verdes",
+      "age": 3
+    },
+    {
+      "id": 3,
+      "client_id": 2,
+      "name": "Viserion",
+      "species": "Dragão",
+      "breed": "Escamas Douradas",
+      "age": 3
+    }
   ]
 }
